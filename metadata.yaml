@@ -1,5 +1,5 @@
 homepage: 'https://neosocios.com/'
 documentation: 'https://github.com/neosocios/array-navigator'
 versions:
-  - sha: '42255ab27976a571c0e928eed9f3b324f15869d9'
+  - sha: '94551b15fb1a81ea292f991a4c58c2ba3b19f860'
     changeNotes: 'Initial release of Array Navigator.'
