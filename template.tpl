@@ -14,7 +14,7 @@ ___INFO___
   "version": 1,
   "securityGroups": [],
   "displayName": "Array Navigator",
-  "description": "",
+  "description": "Returns a single element from an array of name/value objects in the event data. Provide the array key, the target object's name, and the element key: the matching object's JSON value is parsed and the requested element is returned, or undefined if anything is missing.",
   "containerContexts": [
     "SERVER"
   ]
@@ -133,7 +133,103 @@ ___SERVER_PERMISSIONS___
 
 ___TESTS___
 
-scenarios: []
+scenarios:
+- name: Returns the requested element value
+  code: |-
+    const mockData = {
+      array: 'items',
+      object: 'user',
+      element: 'email'
+    };
+
+    mock('getAllEventData', function() {
+      return {
+        items: [
+          {name: 'session', value: '{"id":"s-1"}'},
+          {name: 'user', value: '{"id":"123","email":"a@b.com"}'}
+        ]
+      };
+    });
+
+    const variableResult = runCode(mockData);
+
+    assertThat(variableResult).isEqualTo('a@b.com');
+- name: Returns undefined when a required input is missing
+  code: |-
+    const mockData = {
+      array: 'items',
+      object: 'user',
+      element: ''
+    };
+
+    mock('getAllEventData', function() {
+      return {
+        items: [
+          {name: 'user', value: '{"email":"a@b.com"}'}
+        ]
+      };
+    });
+
+    const variableResult = runCode(mockData);
+
+    assertThat(variableResult).isUndefined();
+- name: Returns undefined when the array key is not in the event data
+  code: |-
+    const mockData = {
+      array: 'missing',
+      object: 'user',
+      element: 'email'
+    };
+
+    mock('getAllEventData', function() {
+      return {
+        items: [
+          {name: 'user', value: '{"email":"a@b.com"}'}
+        ]
+      };
+    });
+
+    const variableResult = runCode(mockData);
+
+    assertThat(variableResult).isUndefined();
+- name: Returns undefined when no object matches the name
+  code: |-
+    const mockData = {
+      array: 'items',
+      object: 'account',
+      element: 'email'
+    };
+
+    mock('getAllEventData', function() {
+      return {
+        items: [
+          {name: 'user', value: '{"email":"a@b.com"}'}
+        ]
+      };
+    });
+
+    const variableResult = runCode(mockData);
+
+    assertThat(variableResult).isUndefined();
+- name: Returns undefined when the element key is absent from the parsed value
+  code: |-
+    const mockData = {
+      array: 'items',
+      object: 'user',
+      element: 'phone'
+    };
+
+    mock('getAllEventData', function() {
+      return {
+        items: [
+          {name: 'user', value: '{"email":"a@b.com"}'}
+        ]
+      };
+    });
+
+    const variableResult = runCode(mockData);
+
+    assertThat(variableResult).isUndefined();
 
 
 ___NOTES___
